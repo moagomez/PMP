@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,36 +7,20 @@
   <title>PMP Quiz</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f5f7fa; }
-    h1, h2 { text-align: center; color: #333; }
-    .question { margin-bottom: 20px; padding: 15px; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; }
+    .question { margin-bottom: 20px; padding: 15px; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0,0,0,0.1); }
     .answer { display: none; margin-top: 10px; font-weight: bold; color: green; }
     button { margin-top: 10px; padding: 8px 12px; border: none; background-color: #007bff; color: white; border-radius: 4px; cursor: pointer; }
     button:hover { background-color: #0056b3; }
-    #quiz-container, #result, #saved-results { margin-top: 30px; }
-    input[type="text"] { padding: 8px; width: 200px; margin-bottom: 20px; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 5px; }
   </style>
 </head>
 <body>
 
 <h1>PMP MCQ Quiz</h1>
 
-<div style="text-align: center;">
-  <input type="text" id="username" placeholder="Enter your name">
-  <button onclick="startQuiz()">Start Quiz</button>
-</div>
-
-<div id="quiz-container" style="display:none;"></div>
-
-<div id="result" style="display:none; text-align:center;">
-  <h2>Quiz Completed!</h2>
-  <p id="score"></p>
-  <div id="all-answers"></div>
-</div>
-
-<div id="saved-results" style="display:none;">
-  <h2>Saved Grades</h2>
-  <ul id="grades-list"></ul>
-</div>
+<div id="quiz-container"></div>
 
 <script>
 const questions = [
@@ -92,22 +77,6 @@ const questions = [
   {q: "Continuous improvement methodology in quality management is called:", options: ["Scope Management", "Quality Assurance", "Risk Response Planning", "Procurement Management"], a: "Quality Assurance"}
 ];
 
-let currentScore = 0;
-let totalQuestions = questions.length;
-let username = '';
-let savedGrades = [];
-
-function startQuiz() {
-  username = document.getElementById('username').value.trim();
-  if (!username) {
-    alert("Please enter your name!");
-    return;
-  }
-  document.querySelector('div[style*="text-align: center;"]').style.display = 'none';
-  document.getElementById('quiz-container').style.display = 'block';
-  createQuiz();
-}
-
 function createQuiz() {
   const container = document.getElementById('quiz-container');
   questions.forEach((q, index) => {
@@ -115,50 +84,16 @@ function createQuiz() {
     div.className = 'question';
     div.innerHTML = `
       <p><strong>Q${index+1}: ${q.q}</strong></p>
-      <ul>
-        ${q.options.map(opt => `<li><input type='radio' name='q${index}' value='${opt}'> ${opt}</li>`).join('')}
-      </ul>
+      <ul>${q.options.map(opt => `<li>${opt}</li>`).join('')}</ul>
+      <button onclick="document.getElementById('answer-${index}').style.display='block'">Show Answer</button>
+      <div class="answer" id="answer-${index}">Answer: ${q.a}</div>
     `;
     container.appendChild(div);
   });
-  const finishButton = document.createElement('button');
-  finishButton.textContent = 'Finish Quiz';
-  finishButton.onclick = showResult;
-  container.appendChild(finishButton);
 }
-
-function showResult() {
-  let correct = 0;
-  questions.forEach((q, index) => {
-    const selected = document.querySelector(`input[name='q${index}']:checked`);
-    if (selected && selected.value === q.a) {
-      correct++;
-    }
-  });
-  savedGrades.push(`${username}: ${correct}/${totalQuestions}`);
-  document.getElementById('quiz-container').style.display = 'none';
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('saved-results').style.display = 'block';
-
-  document.getElementById('score').innerText = `${username}, your score is ${correct} out of ${totalQuestions}`;
-
-  const answersDiv = document.getElementById('all-answers');
-  answersDiv.innerHTML = '';
-  questions.forEach((q, index) => {
-    const p = document.createElement('p');
-    p.innerHTML = `<strong>Q${index+1}:</strong> ${q.q}<br><span style='color:green;'>Correct Answer:</span> ${q.a}`;
-    answersDiv.appendChild(p);
-  });
-
-  const gradesList = document.getElementById('grades-list');
-  gradesList.innerHTML = '';
-  savedGrades.forEach(grade => {
-    const li = document.createElement('li');
-    li.innerText = grade;
-    gradesList.appendChild(li);
-  });
-}
+createQuiz();
 </script>
 
 </body>
 </html>
+
